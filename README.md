@@ -1,78 +1,33 @@
-# DSH 插件总指南 · fandreamfish
+# fandreamfish 🐟
 
-这个账号下有哪些 DeepSeek Harness 插件、各干什么、怎么装；插件产生的数据存在哪、换电脑怎么恢复。
+在 DeepSeek Harness 上养 AI。
 
-**新电脑只报这一个账号，就能从这里把插件和数据全部找回来。**
+## 🐠 fishbowl —— 现在在做的事
 
-## 插件一览
+一个你**养出来**、而不是**配置出来**的 AI。
 
-| 仓库 | 名字 | 干什么 | 安装规格 | 状态 |
-|---|---|---|---|---|
-| [dsh-memory](https://github.com/fandreamfish/dsh-memory) | 记忆 | 会话总结 → 场景 → 全局的三层长期记忆 | `github:fandreamfish/dsh-memory` | 骨架 |
-| [dsh-persona](https://github.com/fandreamfish/dsh-persona) | 人格 | 给 AI 伙伴一套可切换的人设 | `github:fandreamfish/dsh-persona` | 骨架 |
-| [dsh-mood](https://github.com/fandreamfish/dsh-mood) | 心情 | 会自己判断、看得见的心情值 | `github:fandreamfish/dsh-mood` | 骨架 |
-| [dsh-bili](https://github.com/fandreamfish/dsh-bili) | 刷B站 | 派子代理看视频、挑值得的汇报回来 | `github:fandreamfish/dsh-bili` | 骨架 |
-| [dsh-speak-up](https://github.com/fandreamfish/dsh-speak-up) | 主动搭话 | 没人说话时自己掷骰子开口 | `github:fandreamfish/dsh-speak-up` | 骨架 |
+> 记忆、情绪、人格都不是设定项——它们从对话与行动中生长出来。
 
-> 状态「骨架」= 能安装、能被 DSH 加载，功能尚未实现。
+- **人格不预设**：没有“人格插件”，人格是行为长期积累出来的轨迹
+- **情绪是真的**：情绪会改变决策，而不只是改变措辞；一个永远不影响表现的“情绪”只是装饰
+- **有自己在意的事**：自己的议程、未兑现的承诺、没翻篇的事
+- **会反思**：反思必须能得出“我错了”，而不是总能证明自己有理
+- **一个个体一个缸**：每个个体的记忆、气质、情绪互相隔离，可以养很多个
+- **它活着**（规划中）：清醒节律、主动联系、QQ 通道、云端常驻
 
-## 安装（不需要 token，插件仓都是公开的）
+**进度**
 
-```bash
-# 装一个
-dsh plugin --profile desktop add github:fandreamfish/dsh-memory
+| 阶段 | 内容 | 状态 |
+|---|---|---|
+| 设计 | 状态模型 / 评价器 / 情绪 / 记忆三层 / 关系原型 / 部署 | ✅ 完成 |
+| M0 | 认知内核（评价 → 情绪 → 决策偏置），可搬迁性验证 | ✅ 完成 |
+| M1 | DSH 插件：事件收集、状态注入、工具约束、A/B 验证 | 进行中 |
+| 之后 | 记忆巩固、成长率、清醒节律、主动联系、云端 | 规划中 |
 
-# 全装
-dsh plugin --profile desktop add github:fandreamfish/dsh-memory
-dsh plugin --profile desktop add github:fandreamfish/dsh-persona
-dsh plugin --profile desktop add github:fandreamfish/dsh-mood
-dsh plugin --profile desktop add github:fandreamfish/dsh-bili
-dsh plugin --profile desktop add github:fandreamfish/dsh-speak-up
-```
+代码在 [`fishbowl`](https://github.com/fandreamfish/fishbowl)（当前**私有**，链接只有你自己能打开；开发稳定后转公开）。
 
-装完重启 DSH（或热加载）。
+## 🪦 已退役
 
-## 大脑：[dsh-brain](https://github.com/fandreamfish/dsh-brain)（私有）
+`dsh-memory` · `dsh-mood` · `dsh-persona` · `dsh-speak-up` · `dsh-bili` · `dsh-brain`
 
-插件代码在上面；**插件的数据和「这台电脑到底在用哪一版插件」在 `dsh-brain` 里**。
-
-| 分支 | 内容 |
-|---|---|
-| `main` | 模板：结构、规范、插件锁格式、恢复说明、工具。不含任何人的数据 |
-| `person/<名字>` | 某个人的大脑：`plugins/lock.json`（地址/分支/commit/版本）+ `data/<插件>/` 数据 |
-
-仓库里有两样东西：
-
-- `plugins/lock.json` —— 每个插件的仓库地址、分支、**commit sha**、版本、安装规格、配置补丁
-- `data/<plugin-id>/` —— 各插件在这台电脑上产生的数据，**与机器无关**（不写绝对路径、不含凭据）
-
-## 换机恢复
-
-1. **装插件**（不需要 token）：按上面的命令装
-2. **取数据**（需要 token：fine-grained PAT，只给 `dsh-brain` 的 Contents 读写）
-   ```bash
-   git clone https://github.com/fandreamfish/dsh-brain "$env:USERPROFILE\dsh-brain"
-   cd "$env:USERPROFILE\dsh-brain"
-   git checkout person/default
-   node tools/verify.mjs      # 必须先 OK：结构、哈希、机器无关、无凭据
-   node tools/import.mjs --apply
-   ```
-3. **启动并登录** DeepSeek 账号（凭据不入库），问它「你记得我吗」
-
-详见 `dsh-brain` 里的 `RESTORE-FOR-AI.md`（写给新电脑上的 AI 看的）。
-
-## 约定
-
-- 一个插件一个仓，包名 = 仓名；`package.json` 的 `dsh.bundle.patch` 指向本仓 `cordis.patch.yml`
-- 插件入口 `lib/index.js`：`name` / `inject` / `apply(ctx, config)`
-- 每轮都变的内容用 `systemPrompt.context()`；`section()` 会废掉系统提示词缓存
-- **凭据永不入库**（账号 token、B 站 cookie、PAT）；数据仓只收「和电脑无关」的记忆
-- 大脑不懂数据内容：只搬运与校验，插件自己定义格式
-
-## 机器可读清单
-
-见 [`plugins.json`](./plugins.json)。
-
-## 许可
-
-MIT
+旧插件家族里各自负责的「记忆 / 心情 / 人格」，在新设计里是一个整体，不再拆开；仓库已删除，由 fishbowl 取代。
